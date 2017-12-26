@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../VSlibQt/rsc/voicesync-logo.icns</file>
+        <file>../VSlibQt/rsc/icons/generate01.png</file>
+        <file>../VSlibQt/rsc/icons/tree.png</file>
+        <file>../VSlibQt/rsc/icons/pentagon.png</file>
+        <file>../VSlibQt/rsc/icons/discRed.png</file>
+        <file>../VSlibQt/rsc/icons/stop.png</file>
+        <file>../VSlibQt/rsc/icons/save.png</file>
+        <file>../VSlibQt/rsc/icons/transformation.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/discRed.png</file>
+        <file>icons/generate01.png</file>
+        <file>icons/save.png</file>
+        <file>icons/transformation.png</file>
+        <file>icons/tree.png</file>
+        <file>icons/voicesync-logo.icns</file>
+        <file>icons/stop.png</file>
+        <file>icons/process.png</file>
+    </qresource>
+</RCC>
