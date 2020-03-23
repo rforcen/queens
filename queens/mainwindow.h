@@ -8,6 +8,7 @@
 #include <QThread>
 #include <QTime>
 #include <QTimer>
+#include <QAction>
 
 #include <queen.h>
 #include "ui_about.h"
@@ -20,7 +21,7 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
  private slots:
@@ -46,7 +47,7 @@ class MainWindow : public QMainWindow {
  private:
   Ui::MainWindow *ui;
 
-  Queen *q = 0;
+  Queen *q = nullptr;
 
   QTimer timer;
   QTime tim;
@@ -67,15 +68,15 @@ class MainWindow : public QMainWindow {
   void abort() {
     if (rs) {
       q->abort();
-      for (int i = 0; i < nQueens; i++)
+      for (uint i = 0; i < nQueens; i++)
         rs[i].wait();  // wait all threads to finish
     }
   }
   void saveSettings(), loadSettings();
   QSettings *settings;
 
-  RecursiveScan *rs = 0;
-  int nQueens = 0;
+  RecursiveScan *rs = nullptr;
+  uint nQueens = 0;
 
   void doThread(QAction *action, RecursiveScan::ProcType pt);
   QString resultMessage();
@@ -84,7 +85,9 @@ class MainWindow : public QMainWindow {
   class Runner : public QThread {
    public:
     Runner(Queen *q) : q(q) {}
-    Queen *q = 0;
+    ~Runner() override {}
+
+    Queen *q = nullptr;
 
    protected:
     void run() override {

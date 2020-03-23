@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>765</width>
-    <height>530</height>
+    <width>867</width>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>765</width>
+     <width>867</width>
      <height>22</height>
     </rect>
    </property>
@@ -172,9 +172,9 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/icons/generate01.png</normaloff>
-     <normalon>:/icons/stop.png</normalon>:/icons/generate01.png</iconset>
+    <iconset>
+     <normaloff>:/VSlibQt/rsc/icons/generate01.png</normaloff>
+     <normalon>:/VSlibQt/rsc/icons/stop.png</normalon>:/VSlibQt/rsc/icons/generate01.png</iconset>
    </property>
    <property name="text">
     <string>combinations (n^n)</string>
@@ -188,9 +188,9 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/icons/process.png</normaloff>
-     <normalon>:/icons/stop.png</normalon>:/icons/process.png</iconset>
+    <iconset>
+     <normaloff>:/VSlibQt/rsc/icons/pentagon.png</normaloff>
+     <normalon>:/VSlibQt/rsc/icons/stop.png</normalon>:/VSlibQt/rsc/icons/pentagon.png</iconset>
    </property>
    <property name="text">
     <string>permutations (n!)</string>
@@ -204,9 +204,9 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/icons/tree.png</normaloff>
-     <normalon>:/icons/stop.png</normalon>:/icons/tree.png</iconset>
+    <iconset>
+     <normaloff>:/VSlibQt/rsc/icons/tree.png</normaloff>
+     <normalon>:/VSlibQt/rsc/icons/stop.png</normalon>:/VSlibQt/rsc/icons/tree.png</iconset>
    </property>
    <property name="text">
     <string>scan Tree &lt; (n!)</string>
@@ -220,8 +220,8 @@
   </action>
   <action name="actionsave">
    <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+    <iconset>
+     <normaloff>:/VSlibQt/rsc/icons/save.png</normaloff>:/VSlibQt/rsc/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>save</string>
@@ -232,8 +232,8 @@
   </action>
   <action name="actiontransformations">
    <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/icons/transformation.png</normaloff>:/icons/transformation.png</iconset>
+    <iconset>
+     <normaloff>:/VSlibQt/rsc/icons/transformation.png</normaloff>:/VSlibQt/rsc/icons/transformation.png</iconset>
    </property>
    <property name="text">
     <string>transformations</string>
@@ -293,8 +293,6 @@
    <header location="global">chessboard.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -1,17 +1,19 @@
 #include "chessboard.h"
 
 ChessBoard::ChessBoard(QWidget *p) : QOpenGLWidget(p) {
-  imgQ = new QImage(":/icons/discRed.png");
+  imgQ = new QImage(":/VSlibQt/rsc/icons/discRed.png");
 }
 
 void ChessBoard::paint(QPainter &p) {
-  int x0 = 0, y0 = 0;
-  int nq = q->nQueens, szb;
+  uint x0 = 0, y0 = 0;
+  uint nq = q->nQueens, szb;
 
   w = p.device()->width(), h = p.device()->height();
   p.fillRect(0, 0, w, h, Qt::white);
 
-  nw = w / nq, nh = h / nq;
+  nw = w / nq;
+  nh = h / nq;
+
   if (w > h) {
     sz = nh;
     x0 = (w - h) / 2;
@@ -24,7 +26,7 @@ void ChessBoard::paint(QPainter &p) {
     y0 = (h - w) / 2;
   }
 
-  QImage imgqs = imgQ->scaled(sz, sz);  // scale icon
+  QImage imgqs = imgQ->scaled(sz, sz); // scale icon
 
   ff = true;
   for (int i = 0; i < nq; i++) {
@@ -33,14 +35,16 @@ void ChessBoard::paint(QPainter &p) {
 
       auto pnt = QPoint(xp = x0 + i * sz, yp = y0 + (nq - j - 1) * sz);
 
-      if (ff) p.fillRect(xp, yp, sz, sz, QColor(QRgb(0x888888)));
+      if (ff)
+        p.fillRect(xp, yp, sz, sz, QColor(QRgb(0xdddddd)));
       ff = !ff;
 
       if (q->queens[i] == j) {
         p.drawImage(pnt, imgqs);
       }
     }
-    if ((nq & 1) == 0) ff = !ff;
+    if ((nq & 1) == 0)
+      ff = !ff;
   }
 
   p.setPen(Qt::black);
@@ -48,7 +52,8 @@ void ChessBoard::paint(QPainter &p) {
 }
 
 QImage &ChessBoard::paintImage() {
-  if (imgClip) delete imgClip;
+  if (imgClip)
+    delete imgClip;
 
   imgClip = new QImage(imgSize, imgSize, QImage::Format_RGB32);
   imgClip->fill(Qt::white);
@@ -63,7 +68,8 @@ QImage &ChessBoard::paintImage() {
 }
 
 void ChessBoard::paintEvent(QPaintEvent *) {
-  if (!q) return;
+  if (!q)
+    return;
 
   QPainter p(this);
   paint(p);

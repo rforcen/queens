@@ -8,50 +8,58 @@
 #include <QString>
 #include <QThread>
 
+// use variable length arrays
+#pragma clang diagnostic ignored "-Wvla-extension"
+#pragma clang diagnostic ignored "-Wvla"
+
 // q8: 15863724
 typedef qint64 int64;
+typedef quint64 uint64;
 
 class Queen {
  public:
-  Queen(int nQueens);
+  Queen(uint nQueens);
   Queen(Queen *q);
   Queen();
   ~Queen();
 
-  int nQueens = 8;
+  uint nQueens = 8;
 
   bool endSeq = false;
-  int64 countSolutions = 0, countEvals = 0, lastVal = 0, nPerm = 0;
+  uint64 countSolutions = 0, countEvals = 0, lastVal = 0, nPerm = 0;
   double nCases =
       0;  // pow(nQueens, nQueens), 8=16e6, 387e6, 10=1e10, 11=2.8e12,
           // ... 25=9e34
-  int64 nPermutations = 0;
+  uint64 nPermutations = 0;
 
-  int *queens = 0;  // row in board, col is index
+  uint *queens = nullptr;  // row in board, col is index
 
-  typedef QList<int *> SolutionList;
+  typedef QList<uint *> SolutionList;
   SolutionList solutions, solSave;
   static int stopSolutions;
-  QMap<QString, int *> solutionMap;
+  QMap<QString, uint *> solutionMap;
 
   static bool m_abort;  //  abort processing all threads
   void setAbort(int a) { m_abort = a; }
 
-  inline int operator[](int x) { return queens[x]; }
+  inline uint operator[](int x) { return queens[x]; }
   inline int abs(int x) { return x < 0 ? -x : x; }
-  int64 factorial(int x) {
+  // abs diff
+  inline uint abs_sub(uint a, uint b) { return a > b ? a - b : b - a; }
+
+  uint64 factorial(uint x) {
     if (x == 0)
       return 1;
     else
       return x * factorial(x - 1);
   }
-  int64 ipow(int x, int y) {
-    int64 r = 1;
+  uint64 ipow(uint x, int y) {
+    uint64 r = 1;
     for (int i = 0; i < y; i++) r *= x;
     return r;
   }
 
-  void init(int nQueens);
+  void init(uint nQueens);
   void abort() { m_abort = true; }
 
   void random();
@@ -60,12 +68,12 @@ class Queen {
 
   void saveSolution(), deleteSolutions();
   QString getSolution(int ix);
-  int *getRawSolution(int ix);
+  uint *getRawSolution(int ix);
   void sortSolutions();
   void setStopSolutions(int ss) { stopSolutions = ss; }
 
   void initSolutionMap() { solutionMap.clear(); }
-  void addSolutionMap(int *v) {
+  void addSolutionMap(uint *v) {
     if (v) {
       copy2q(v);
       if (isValid()) solutionMap[toString()] = queensCopy();
@@ -93,59 +101,59 @@ class Queen {
   void generateCombinations();
 
   void scan();
-  void scan(int nq);
-  int moves(int nq, int *mvq);
+  void scan(uint nq);
+  uint moves(uint nq, uint *mvq);
 
   void zeroQueenCounters();
 
-  void beginCombinations(int initVal = 0), beginPermutations(), initCounters();
-  bool nextCombination(int nq = 0);
+  void beginCombinations(uint initVal = 0), beginPermutations(), initCounters();
+  bool nextCombination(uint nq = 0);
   bool endCombination();
 
   // transformations
   void rotate90(), mirrorV(), mirrorH(), translateH(), translateV();
-  void copy(int *dest, int *source) {
+  void copy(uint *dest, uint *source) {
     memcpy(dest, source, nQueens * sizeof(*queens));
   }
-  void copy2q(int *source) {
+  void copy2q(uint *source) {
     memcpy(queens, source, nQueens * sizeof(*queens));
   }
-  int *queensCopy() {  // return a new copy of queens
-    int *v = new int[nQueens];
+  uint *queensCopy() {  // return a new copy of queens
+    uint *v = new uint[nQueens];
     copy(v, queens);
     return v;
   }
-  int *vectCopy(int *vc) {  // return a new copy of queens
-    int *v = new int[nQueens];
+  uint *vectCopy(uint *vc) {  // return a new copy of queens
+    uint *v = new uint[nQueens];
     copy(v, vc);
     return v;
   }
   bool EQvect(int *v1, int *v2) {
     bool eq = true;
-    for (int i = 0; i < nQueens && eq; i++) eq = v1[i] == v2[i];
+    for (uint i = 0; i < nQueens && eq; i++) eq = v1[i] == v2[i];
     return eq;
   }
 
-  void permutations(int nCol);
+  void permutations(uint nCol);
   void permutations();
 
-  void nThPermutation(int index);
+  void nThPermutation(uint index);
 
-  inline void swap(int &a, int &b) {
-    int x = a;
+  inline void swap(uint &a, uint &b) {
+    uint x = a;
     a = b;
     b = x;
   }
 
-  QString toString(), toString(int *q);
-  QString toStringRaw(), toStringRaw(int *q), toStringRaw(int *q, int n);
-  int *fromString(QString s);
+  QString toString(), toString(uint *q);
+  QString toStringRaw(), toStringRaw(uint *q), toStringRaw(uint *q, uint n);
+  uint *fromString(QString s);
 
   bool write(QString fileName);
 };
 
 class RecursiveScan : public Queen, public QThread {
-  Queen *qParent = 0;
+  Queen *qParent = nullptr;
   static QMutex mtx;  //  same mtx for all threads
 
  public:
@@ -164,8 +172,6 @@ class RecursiveScan : public Queen, public QThread {
         while (!nextCombination(1) && !m_abort)
           if (isValid()) saveSolution();
         break;
-      default:
-        break;
     }
     addResults();
   }
@@ -181,8 +187,8 @@ class RecursiveScan : public Queen, public QThread {
   }
 
   void setProcType(ProcType pt) { this->pt = pt; }
-  int getSolutionCount() { return countSolutions; }
-  int getEvalCount() { return countEvals; }
+  uint64 getSolutionCount() { return countSolutions; }
+  uint64 getEvalCount() { return countEvals; }
 
   RecursiveScan(Queen *q) : Queen(q), qParent(q) { start(); }
 
