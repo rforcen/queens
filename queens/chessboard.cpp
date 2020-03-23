@@ -8,52 +8,61 @@ void ChessBoard::paint(QPainter &p) {
   uint x0 = 0, y0 = 0;
   uint nq = q->nQueens, szb;
 
-  w = p.device()->width(), h = p.device()->height();
-  p.fillRect(0, 0, w, h, Qt::white);
+  w = p.device()->width();
+  h = p.device()->height();
+  p.fillRect(0, 0, int(w), int(h), Qt::white);
 
   nw = w / nq;
   nh = h / nq;
 
   if (w > h) {
     sz = nh;
-    x0 = (w - h) / 2;
-    szb = h;
+    x0 = uint((w - h) / 2);
+    szb = uint(h);
     y0 = 0;
   } else {
     sz = nw;
-    szb = w;
+    szb = uint(w);
     x0 = 0;
-    y0 = (h - w) / 2;
+    y0 = uint((h - w) / 2);
   }
 
-  QImage imgqs = imgQ->scaled(sz, sz); // scale icon
+  QImage imgqs = imgQ->scaled(int(sz), int(sz));  // scale icon
 
   ff = true;
-  for (int i = 0; i < nq; i++) {
-    for (int j = 0; j < nq; j++) {
+  for (uint i = 0; i < nq; i++) {
+    for (uint j = 0; j < nq; j++) {
       int xp, yp;
 
-      auto pnt = QPoint(xp = x0 + i * sz, yp = y0 + (nq - j - 1) * sz);
+      auto pnt =
+          QPoint(xp = int(x0 + i * sz), yp = int(y0 + (nq - j - 1) * sz));
 
-      if (ff)
-        p.fillRect(xp, yp, sz, sz, QColor(QRgb(0xdddddd)));
+      if (ff) p.fillRect(xp, yp, int(sz), int(sz), QColor(QRgb(0xdddddd)));
       ff = !ff;
 
       if (q->queens[i] == j) {
-        p.drawImage(pnt, imgqs);
+        //        p.drawImage(pnt, imgqs);
+
+        p.save();
+        {
+          auto sz2 = int(sz / 2), sz21 = int(sz / 2.2f), sz22 = int(sz / 4);
+          p.setBrush(Qt::red);
+          p.drawEllipse(pnt + QPoint(sz2, sz2), sz21, sz21);  // rect);
+          p.setBrush(Qt::darkYellow);
+          p.drawEllipse(pnt + QPoint(sz2, sz2), sz22, sz22);  // rect);
+        }
+        p.restore();
       }
     }
-    if ((nq & 1) == 0)
-      ff = !ff;
+    if ((nq & 1) == 0) ff = !ff;
   }
 
   p.setPen(Qt::black);
-  p.drawRect(x0, y0, sz * nq - 1, sz * nq - 1);
+  p.drawRect(int(x0), int(y0), int(sz * nq - 1), int(sz * nq - 1));
 }
 
 QImage &ChessBoard::paintImage() {
-  if (imgClip)
-    delete imgClip;
+  if (imgClip) delete imgClip;
 
   imgClip = new QImage(imgSize, imgSize, QImage::Format_RGB32);
   imgClip->fill(Qt::white);
@@ -68,8 +77,7 @@ QImage &ChessBoard::paintImage() {
 }
 
 void ChessBoard::paintEvent(QPaintEvent *) {
-  if (!q)
-    return;
+  if (!q) return;
 
   QPainter p(this);
   paint(p);
