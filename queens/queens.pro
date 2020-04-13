@@ -13,11 +13,9 @@ TEMPLATE = app
 ICON = ../VSlibQt/rsc/voicesync-logo.icns
 
 CONFIG+=sdk_no_version_check
-CONFIG += c++11
-QMAKE_CXXFLAGS += -std=c++11
+CONFIG += c++1z
+#QMAKE_CXXFLAGS += -std=c++11
 
-CONFIG += -std=c99
-QMAKE_CFLAGS += -std=c99
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -35,12 +33,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     queen.cpp \
     tabsolutions.cpp \
-    chessboard.cpp
+    chessboard.cpp \
+    worker.cpp
 
 HEADERS  += mainwindow.h \
     queen.h \
     tabsolutions.h \
-    chessboard.h
+    chessboard.h \
+    worker.h
 
 FORMS    += mainwindow.ui \
     about.ui

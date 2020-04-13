@@ -2,6 +2,7 @@
 #define CHESSBOARD_H
 
 #include <queen.h>
+
 #include <QOpenGLWidget>
 #include <QPainter>
 
@@ -10,7 +11,6 @@ class ChessBoard : public QOpenGLWidget {
   ChessBoard(QWidget *p);
   ~ChessBoard() {
     if (imgClip) delete imgClip;
-    if (imgQ) delete imgQ;
   }
 
   void setQueen(Queen *q) {
@@ -21,10 +21,10 @@ class ChessBoard : public QOpenGLWidget {
   void paint(QPainter &p);
   QImage &paintImage();
 
-  Queen *q = 0;
+  Queen *q = nullptr;
 
   float w, h, nw, nh, sz, chipX = 0, chipY = 0;
-  QImage *imgQ = 0, *imgClip = 0;
+  QImage *imgClip = nullptr;
 
   bool ft = true, ff;
   int imgSize = 2048;

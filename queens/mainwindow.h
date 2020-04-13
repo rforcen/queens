@@ -1,16 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <queen.h>
+#include <worker.h>
+
+#include <QAction>
 #include <QClipboard>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QSettings>
-#include <QThread>
 #include <QTime>
 #include <QTimer>
-#include <QAction>
 
-#include <queen.h>
 #include "ui_about.h"
 
 namespace Ui {
@@ -28,8 +29,6 @@ class MainWindow : public QMainWindow {
   void onDisplay();
   void onTimer();
 
-  void on_actiongenerate_all_triggered();
-  void on_actionpermutations_triggered();
   void on_tabSolutions_clicked(const QModelIndex &index);
   void on_actionthread_triggered();
   void on_actionsave_triggered();
@@ -41,16 +40,13 @@ class MainWindow : public QMainWindow {
   void on_actioncopy_image_triggered();
   void on_actioncopy_result_message_triggered();
 
- signals:
-  void display();
-
  private:
   Ui::MainWindow *ui;
 
   Queen *q = nullptr;
 
   QTimer timer;
-  QTime tim;
+  QTime time_lap;
   QList<QAction *> actList;
 
   void actionsDisableAll(QAction *act) {
@@ -64,44 +60,18 @@ class MainWindow : public QMainWindow {
     }
   }
 
-  void disp();
+  void display();
   void abort() {
-    if (rs) {
-      q->abort();
-      for (uint i = 0; i < nQueens; i++)
-        rs[i].wait();  // wait all threads to finish
-    }
+    if (wks) wks->wait_all();
   }
   void saveSettings(), loadSettings();
   QSettings *settings;
 
-  RecursiveScan *rs = nullptr;
-  uint nQueens = 0;
+  Workers *wks = nullptr;
+  int nQueens = 0;
 
-  void doThread(QAction *action, RecursiveScan::ProcType pt);
+  void doThread(QAction *action);
   QString resultMessage();
-
-  // local thread sample
-  class Runner : public QThread {
-   public:
-    Runner(Queen *q) : q(q) {}
-    ~Runner() override {}
-
-    Queen *q = nullptr;
-
-   protected:
-    void run() override {
-      if (q)
-        for (q->beginCombinations(); !q->endCombination(); q->nextCombination())
-          if (q->isValid()) q->saveSolution();
-    }
-  } * combiRunner;
-
-  void threadCombi() {
-    combiRunner = new Runner(q);
-    connect(combiRunner, SIGNAL(finished()), this, SLOT(onDisplay()));
-    combiRunner->start();
-  }
 };
 
 #endif  // MAINWINDOW_H

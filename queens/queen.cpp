@@ -1,9 +1,9 @@
 #include "queen.h"
 
 Queen::Queen() {}
-Queen::Queen(uint nQueens) { init(nQueens); }
+Queen::Queen(int nQueens) { init(nQueens); }
 
-Queen::Queen(Queen *q) {
+Queen::Queen(Queen* q) {
   init(q->nQueens);
   copy2q(q->queens);
 }
@@ -13,48 +13,49 @@ Queen::~Queen() {
   if (queens) delete queens;
 }
 
-void Queen::init(uint nQueens) {
+void Queen::init(int nQueens) {
   this->nQueens = nQueens;
 
-  queens = new uint[nQueens];
+  queens = new int[size_t(nQueens)];
 
   nCases = pow(nQueens, nQueens);
   nPermutations = factorial(nQueens);
+  m_abort = false;
   zeroQueenCounters();
 }
 
 void Queen::random() {
-  for (uint i = 0; i < nQueens; i++) queens[i] = uint(qrand()) % nQueens;
+  for (int i = 0; i < nQueens; i++) queens[i] = qrand() % nQueens;
 }
 
-bool Queen::isValid() {  // find if a board is valid
-  bool valid = true;
+bool Queen::isValid() {
+  bool ok = true;
   countEvals++;
 
-  for (uint i = 0; i < nQueens - 1 && valid; i++)
-    for (uint j = i + 1; j < nQueens; j++) {
+  for (int i = 0; i < nQueens - 1 && ok; i++)
+    for (int j = i + 1; j < nQueens; j++) {
       if (queens[i] == queens[j]) {  // horizontal -> ci=cj
-        valid = false;
+        ok = false;
         break;
       }
       if (i - queens[i] == j - queens[j]) {  // vertical  / ri-ci = rj-cj
-        valid = false;
+        ok = false;
         break;
       }
-      if (abs_sub(queens[i], queens[j]) ==
-          abs_sub(i, j)) {  // vertical \ |ci-cj| = |i-j|
-        valid = false;
+      if (abs(queens[i] - queens[j]) ==
+          abs(i - j)) {  // vertical \ |ci-cj| = |i-j|
+        ok = false;
         break;
       }
     }
-  if (valid) countSolutions++;
-  return valid;
+  if (ok) countSolutions++;
+  return ok;
 }
 
 // solution mgr.
 void Queen::saveSolution() {  // in queens
   if (!m_abort) {
-    uint *q = new uint[nQueens];
+    int* q = new int[size_t(nQueens)];
     copy(q, queens);
     solutions << q;
 
@@ -70,22 +71,20 @@ QString Queen::getSolution(int ix) {
   if (ix >= 0 && ix < solutions.size()) s = toString(solutions[ix]);
   return s;
 }
-
-uint *Queen::getRawSolution(int ix) {
+int* Queen::getRawSolution(int ix) {
   if (ix >= 0 && ix < solutions.size()) return solutions[ix];
   return nullptr;
 }
 
 void Queen::sortSolutions() {
   if (solutions.size()) {
-    std::sort(solutions.begin(), solutions.end(),
-              [=](uint *a, uint *b) -> bool {
-                for (uint i = 0; i < nQueens; i++) {
-                  auto ia = a[i], ib = b[i];
-                  if (ia != ib) return ia < ib;
-                }
-                return false;  // a==b -> ! a<b
-              });
+    std::sort(solutions.begin(), solutions.end(), [=](int* a, int* b) -> bool {
+      for (int i = 0; i < nQueens; i++) {
+        auto ia = a[i], ib = b[i];
+        if (ia != ib) return ia < ib;
+      }
+      return false;  // a==b -> ! a<b
+    });
   }
 }
 
@@ -99,15 +98,14 @@ void Queen::scan() {
 
   scan(0);
 }
-
-void Queen::scan(uint nq) {
+void Queen::scan(int nq) {
   if (!m_abort) {
     if (nq < nQueens) {
-      uint mvq[nQueens];  // generate moves -> mvq
-      uint nmv = moves(nq, mvq);
+      int mvq[nQueens];  // generate moves -> mvq
+      int nmv = moves(nq, mvq);
 
-      for (uint i = 0; i < nmv; i++) {
-        uint mvtmp = queens[nq];  // keep pos.
+      for (int i = 0; i < nmv; i++) {
+        int mvtmp = queens[nq];  // keep pos.
 
         queens[nq] = mvq[i];  // move(i)
         scan(nq + 1);
@@ -118,25 +116,21 @@ void Queen::scan(uint nq) {
       saveSolution();
   }
 }
+int Queen::moves(int nq,
+                 int* mvq) {  // generate all possible moves of 'nq' queen
+  int cm = 0;
 
-uint Queen::moves(uint nq,
-                  uint *mvq) {  // generate all possible moves of 'nq' queen
-  uint cm = 0;
-
-  for (uint i = 0; i < nQueens; i++) {
+  for (int i = 0; i < nQueens; i++) {
     bool valid = true;
-    for (uint c = nq, j = nq - 1; c != 0 && valid;
-         c--, j--) {  // check against prev. queens
+    for (int j = nq - 1; j >= 0 && valid; j--) {  // check against prev. queens
 
-      if (i != queens[j]) {                     // - horizontal
-        if ((i - nq) != (queens[j] - j)) {      // / diag.
-          valid = abs_sub(j , nq) != abs_sub(queens[j] , i);  // \ diag.
-        } else {
+      if (i != queens[j]) {                           // - horizontal
+        if ((i - nq) != (queens[j] - j)) {            // / diag.
+          valid = abs(j - nq) != abs(queens[j] - i);  // \ diag.
+        } else
           valid = false;
-        }
-      } else {
+      } else
         valid = false;
-      }
 
       countEvals++;
     }
@@ -146,7 +140,7 @@ uint Queen::moves(uint nq,
 }
 
 void Queen::zeroQueenCounters() {
-  for (uint i = 0; i < nQueens; i++) queens[i] = 0;
+  for (int i = 0; i < nQueens; i++) queens[i] = 0;
   initCounters();
 }
 
@@ -161,14 +155,14 @@ void Queen::initCounters() {
   deleteSolutions();
 }
 
-void Queen::beginCombinations(uint initVal) {
-  for (uint i = 0; i < nQueens; i++) queens[i] = initVal;
+void Queen::beginCombinations(int initVal) {
+  for (int i = 0; i < nQueens; i++) queens[i] = initVal;
   initCounters();
 }
 
-bool Queen::nextCombination(uint nq) {
+bool Queen::nextCombination(int nq) {
   bool cont = true;
-  for (uint i = nq; i < nQueens && cont; i++) {
+  for (int i = nq; i < nQueens && cont; i++) {
     if (++queens[i] == nQueens)
       queens[i] = 0;
     else
@@ -181,10 +175,10 @@ bool Queen::endCombination() { return endSeq; }
 
 // transformations
 void Queen::rotate90() {
-  uint *rotQueens = new uint[nQueens];
-  for (uint i = 0; i < nQueens; i++) {
+  int rotQueens[nQueens];
+  for (int i = 0; i < nQueens; i++) {
     rotQueens[i] = 0;
-    for (uint j = 0; j < nQueens; j++) {  // find i
+    for (int j = 0; j < nQueens; j++) {  // find i
       if (queens[j] == i) {
         rotQueens[i] = nQueens - j - 1;
         break;
@@ -192,57 +186,55 @@ void Queen::rotate90() {
     }
   }
   copy2q(rotQueens);
-  delete[] rotQueens;
 }
 void Queen::mirrorH() {
-  for (uint i = 0; i < nQueens; i++) queens[i] = (nQueens - 1) - queens[i];
+  for (int i = 0; i < nQueens; i++) queens[i] = (nQueens - 1) - queens[i];
 }
 void Queen::mirrorV() {
-  for (uint i = 0; i < nQueens / 2; i++)
+  for (int i = 0; i < nQueens / 2; i++)
     swap(queens[i], queens[nQueens - 1 - i]);
 }
 void Queen::translateV() {  // up
-  for (uint i = 0; i < nQueens; i++) queens[i] = (queens[i] + 1) % nQueens;
+  for (int i = 0; i < nQueens; i++) queens[i] = (queens[i] + 1) % nQueens;
 }
 void Queen::translateH() {  // right
-  uint *v = new uint[nQueens];
-  for (uint i = 0; i < nQueens - 1; i++) v[i + 1] = queens[i];
+  int v[nQueens];
+  for (int i = 0; i < nQueens - 1; i++) v[i + 1] = queens[i];
   v[0] = queens[nQueens - 1];
   copy2q(v);
-  delete[] v;
 }
 
 QString Queen::toString() {
   QString s;
-  for (uint i = 0; i < nQueens; i++)
+  for (int i = 0; i < nQueens; i++)
     s += QString::number(queens[i] + 1) + (i != nQueens - 1 ? " " : "");
   return s;
 }
-QString Queen::toString(uint *q) {
+QString Queen::toString(int* q) {
   QString s;
-  for (uint i = 0; i < nQueens; i++) s += QString::number(q[i] + 1) + " ";
+  for (int i = 0; i < nQueens; i++) s += QString::number(q[i] + 1) + " ";
   return s;
 }
 
 QString Queen::toStringRaw() {
   QString s;
-  for (uint i = 0; i < nQueens; i++) s += QString::number(queens[i]);
+  for (int i = 0; i < nQueens; i++) s += QString::number(queens[i]);
   return s;
 }
-QString Queen::toStringRaw(uint *q) {
+QString Queen::toStringRaw(int* q) {
   QString s;
-  for (uint i = 0; i < nQueens; i++) s += QString::number(q[i]);
+  for (int i = 0; i < nQueens; i++) s += QString::number(q[i]);
   return s;
 }
-QString Queen::toStringRaw(uint *q, uint n) {
+QString Queen::toStringRaw(int* q, int n) {
   QString s;
-  for (uint i = 0; i < n; i++) s += QString::number(q[i]);
+  for (int i = 0; i < n; i++) s += QString::number(q[i]);
   return s;
 }
-uint *Queen::fromString(QString s) {  //  to queens
+int* Queen::fromString(QString s) {  //  to queens
   auto sl = s.split(" ", QString::SkipEmptyParts);
-  if (uint(sl.size()) == nQueens) {
-    for (uint i = 0; i < nQueens; i++) queens[i] = uint(sl[int(i)].toInt());
+  if (sl.size() == nQueens) {
+    for (int i = 0; i < nQueens; i++) queens[i] = sl[i].toInt();
   }
   return queens;
 }
@@ -251,13 +243,13 @@ uint *Queen::fromString(QString s) {  //  to queens
 
 void Queen::beginPermutations() {  // start w/ q[i]=i;
   zeroQueenCounters();
-  for (uint i = 0; i < nQueens; i++) queens[i] = i;
+  for (int i = 0; i < nQueens; i++) queens[i] = i;
 }
 
-void Queen::permutations(uint nCol) {
+void Queen::permutations(int nCol) {
   if (!m_abort) {
     if (nCol != nQueens)
-      for (uint i = nCol; i < nQueens; i++) {
+      for (int i = nCol; i < nQueens; i++) {
         swap(queens[i], queens[nCol]);
         permutations(nCol + 1);
         swap(queens[i], queens[nCol]);
@@ -274,19 +266,19 @@ void Queen::permutations() {
   permutations(0);
 }
 
-void Queen::nThPermutation(uint index) {
-  uint64 scale;
-  uint64 d;
+void Queen::nThPermutation(int index) {
+  int64 scale;
+  int i, d;
 
   scale = factorial(nQueens);
 
-  for (uint i = 0; i < nQueens - 1; i++) {
-    scale /= uint64(nQueens - i);
+  for (i = 0; i < nQueens - 1; i++) {
+    scale /= qint64(nQueens - i);
     d = index / scale;
     index %= scale;
     if (d > 0) {
       auto c = queens[i + d];
-      memmove(queens + i + 1, queens + i, d * sizeof(*queens));
+      memmove(queens + i + 1, queens + i, size_t(d) * sizeof(*queens));
       queens[i] = c;
     }
   }
@@ -310,8 +302,6 @@ bool Queen::write(QString fileName) {
   return res;
 }
 
-// static mutex def.
-QMutex RecursiveScan::mtx;
 // static Queen
 bool Queen::m_abort = false;
 int Queen::stopSolutions = 0;

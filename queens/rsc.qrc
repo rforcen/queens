@@ -1,20 +1,10 @@
 <RCC>
     <qresource prefix="/">
         <file>../VSlibQt/rsc/voicesync-logo.icns</file>
-        <file>../VSlibQt/rsc/icons/queen01.ico</file>
-        <file>../VSlibQt/rsc/icons/queen02.png</file>
-        <file>../VSlibQt/rsc/icons/queen03.png</file>
-        <file>../VSlibQt/rsc/icons/queen04.png</file>
-        <file>../VSlibQt/rsc/icons/queen05.png</file>
         <file>../VSlibQt/rsc/icons/generate01.png</file>
         <file>../VSlibQt/rsc/icons/permutation.jpg</file>
         <file>../VSlibQt/rsc/icons/tree.png</file>
         <file>../VSlibQt/rsc/icons/pentagon.png</file>
-        <file>../VSlibQt/rsc/icons/process.png</file>
-        <file>../VSlibQt/rsc/icons/chip02.png</file>
-        <file>../VSlibQt/rsc/icons/chip03.png</file>
-        <file>../VSlibQt/rsc/icons/chip04.png</file>
-        <file>../VSlibQt/rsc/icons/discRed.png</file>
         <file>../VSlibQt/rsc/icons/stop.png</file>
         <file>../VSlibQt/rsc/icons/save.png</file>
         <file>../VSlibQt/rsc/icons/transformation.png</file>

@@ -1,8 +1,6 @@
 #include "chessboard.h"
 
-ChessBoard::ChessBoard(QWidget *p) : QOpenGLWidget(p) {
-  imgQ = new QImage(":/VSlibQt/rsc/icons/discRed.png");
-}
+ChessBoard::ChessBoard(QWidget *p) : QOpenGLWidget(p) {}
 
 void ChessBoard::paint(QPainter &p) {
   uint x0 = 0, y0 = 0;
@@ -27,8 +25,6 @@ void ChessBoard::paint(QPainter &p) {
     y0 = uint((h - w) / 2);
   }
 
-  QImage imgqs = imgQ->scaled(int(sz), int(sz));  // scale icon
-
   ff = true;
   for (uint i = 0; i < nq; i++) {
     for (uint j = 0; j < nq; j++) {
@@ -41,15 +37,13 @@ void ChessBoard::paint(QPainter &p) {
       ff = !ff;
 
       if (q->queens[i] == j) {
-        //        p.drawImage(pnt, imgqs);
-
         p.save();
         {
           auto sz2 = int(sz / 2), sz21 = int(sz / 2.2f), sz22 = int(sz / 4);
           p.setBrush(Qt::red);
-          p.drawEllipse(pnt + QPoint(sz2, sz2), sz21, sz21);  // rect);
+          p.drawEllipse(pnt + QPoint(sz2, sz2), sz21, sz21);
           p.setBrush(Qt::darkYellow);
-          p.drawEllipse(pnt + QPoint(sz2, sz2), sz22, sz22);  // rect);
+          p.drawEllipse(pnt + QPoint(sz2, sz2), sz22, sz22);
         }
         p.restore();
       }

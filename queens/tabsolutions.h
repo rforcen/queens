@@ -19,20 +19,20 @@ class SolutionsDispModel : public QAbstractTableModel {
 
   void setSolution(const QModelIndex &index) {
     auto qs = data(index).toString().split(" ", QString::SkipEmptyParts);
-    if (uint(qs.size()) == q->nQueens)
-      for (uint i = 0; i < q->nQueens; i++) q->queens[i] = uint(qs[int(i)].toInt() - 1);
+    if (qs.size() == q->nQueens)
+      for (int i = 0; i < q->nQueens; i++) q->queens[i] = qs[i].toInt() - 1;
   }
   void setSolution() {
     auto qs = data(index(0, 0)).toString().split(" ", QString::SkipEmptyParts);
-    if (uint(qs.size()) == q->nQueens)
-      for (uint i = 0; i < q->nQueens; i++) q->queens[i] = uint(qs[int(i)].toInt() - 1);
+    if (qs.size() == q->nQueens)
+      for (int i = 0; i < q->nQueens; i++) q->queens[i] = qs[i].toInt() - 1;
   }
 
   void refresh() {
     emit dataChanged(index(0, 0),
                      index(rowCount(), columnCount()));  // update whole view
   }
-  uint *getData(const QModelIndex &index) {
+  int *getData(const QModelIndex &index) {
     return q->getRawSolution(index.row() * nCols + index.column());
   }
 
@@ -60,6 +60,7 @@ class SolutionsDispModel : public QAbstractTableModel {
       case Qt::Vertical:
         if (role == Qt::DisplayRole) return QVariant(section * nCols + 1);
         break;
+      default:;
     }
     return QVariant();
   }
@@ -67,8 +68,8 @@ class SolutionsDispModel : public QAbstractTableModel {
 
 class TabSolutions : public QTableView {
  public:
-  TabSolutions(QWidget *p = nullptr);
-  SolutionsDispModel *model = nullptr;
+  TabSolutions(QWidget *p = 0);
+  SolutionsDispModel *model = 0;
 
   void setSolutions(Queen *q) {
     if (model) delete model;
